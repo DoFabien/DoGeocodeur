@@ -66,9 +66,9 @@
 
         <div id="footer">
 
-            <button ng-click="export(generate_CSV(),Date.now(),'Export_CSV.csv','text/csv')" class="btn btn-success btn-sm" > Exporter en CSV</button>
-            <button ng-click="export(generate_KML(),Date.now(),'Export_kml.kml','application/vnd.google-earth.kml+xml')" class="btn btn-success btn-sm" > Exporter en KML</button>
-            <button ng-click="export(generate_GEOJSON(),Date.now(),'Export_geojson.geojson','application/json')" class="btn btn-success btn-sm" > Exporter en GeoJson</button>
+            <button ng-disabled="arrayIsEmpty()" ng-click="export(generate_CSV(),'Export.csv','text/csv')" class="btn btn-success btn-sm" > Exporter en CSV</button>
+            <button ng-disabled="arrayIsEmpty()" ng-click="export(generate_KML(),'Export.kml','application/vnd.google-earth.kml+xml')" class="btn btn-success btn-sm" > Exporter en KML</button>
+            <button ng-disabled="arrayIsEmpty()" ng-click="export(generate_GEOJSON(),'Export.geojson','application/json')" class="btn btn-success btn-sm" > Exporter en GeoJson</button>
 
         </div>
 

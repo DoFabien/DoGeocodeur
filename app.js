@@ -169,7 +169,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
     }
 
     /*EXPORT DU FICHIER ET PROPOSE LE TELECHARGEMENT*/
-    $scope.export = function(content,nom_tmp,nom_file,type_mime){
+    $scope.export = function(content,nom_file,type_mime){
 
         method = 'POST';
         var form = document.createElement("form");
@@ -502,7 +502,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
         var adresse_encoded = encodeURIComponent(adresse);
         http://api-adresse.data.gouv.fr/search/?q=8 bd du port
         var url = "http://api-adresse.data.gouv.fr/search/?q="+adresse_encoded+"&limit=1"
-        console.log(url);
+        
         $.ajax({
             type: "get",
             url:url ,
@@ -511,14 +511,10 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
             dataType: "json"
         });
         function result(data){
-            console.log(data.features[0]);
+         if(data.features[0]){
             var res = data.features[0];
-            console.log(res.properties.type);
-            console.log(res.properties.score);
             var lat = res.geometry.coordinates[1];
             var lng = res.geometry.coordinates[0];
-            console.log(lat);
-            console.log(lng);
 
             var score = 0;
             var score_type =0;
@@ -531,19 +527,17 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
             }
 
             var _score = res.properties.score;
-            if (_score > 0.90) { score_precision = 9 } 
-            else  if (_score > 0.80) {  score_precision = 8 } 
+            if (_score > 0.80) { score_precision = 9 } 
             else  if (_score > 0.70) {  score_precision = 7 } 
             else  if (_score > 0.60) {  score_precision = 6 } 
-            else  if (_score > 0.50) {  score_precision = 5 } 
-            else  if (_score > 0.40) {  score_precision = 4 } 
-            else  if (_score > 0.20) {  score_precision = 2 } 
-            else  if (_score > 0.10) {  score_precision = 0 } 
-            else                     {  score_precision = -5 };
+            else  if (_score > 0.50) {  score_precision = 0 } 
+            else  if (_score > 0.40) {  score_precision = -3 } 
+            else  if (_score > 0.20) {  score_precision = -5 } 
+            else  if (_score > 0.10) {  score_precision = -10 } 
+            else                     {  score_precision = -12 };
 
 
             score = score_type+score_precision;
-            //console.log (score_type + ' + ' + score_precision + ' = ' + score);
             if($scope.data_geocode[i][$scope.champs_geocode.score] < score || $scope.data_geocode[i][$scope.champs_geocode.score] == undefined || forcing==true){
                 $scope.data_geocode[i][$scope.champs_geocode.geocoder] = 'BAN';
                 $scope.data_geocode[i][$scope.champs_geocode.lat] = lat;
@@ -553,8 +547,17 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
             }
         }
+     }
     }
 
+    $scope.arrayIsEmpty = function() {
+ if ($scope.data_geocode.length > 1) { 
+   return false;
+  }
+  else {
+   return true;
+  }
+};
 
     /*OUVERTURE DE LA POPUP D'IMPORT*/
     $scope.open_popup = function (_data) {
