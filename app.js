@@ -16,10 +16,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
     if(navigator.geolocation){navigator.geolocation.getCurrentPosition(get_position);}   
 
     function get_position(location){
-        //     console.log(location.coords.longitude);
-        //  console.log(location.coords.latitude);
         map.setView([ location.coords.latitude, location.coords.longitude], 8);
-
     }
 
     $scope.btn_disabled = true;
@@ -28,7 +25,6 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
     $scope.marker_data =  [];
     $scope.adresse = '';
     $scope.scrore_min = 93;
-
     $scope.columnDefs = [{displayName: "En attente de données" ,enableCellEdit: false, width: "*"}];
 
 
@@ -97,7 +93,6 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
     function on_drag_end_Marker(e) { 
         var leaflet_id = e.target._leaflet_id;
         var index= $scope.findWithAttr($scope.data_geocode,'leaflet_id',leaflet_id);
-        console.log(e);
         FGroup.removeLayer(leaflet_id);
         $scope.add_marker(e.target._latlng.lat,e.target._latlng.lng,index,100);
     }
@@ -121,7 +116,6 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
             headers.push($scope.field_lbl_ind[i].lbl);
         }
         csv+=headers.join(';')+"\r\n";
-        //console.log(headers);
         for (j=0;j<$scope.data_geocode.length;j++){
             var row =[];
             for (k=0;k<$scope.field_lbl_ind.length;k++){
@@ -200,10 +194,8 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
     /*FORCE LE GEOCODAGE DE LA LIGNE MEME SI LE SCORE EST PLUS HAUT*/
     $scope.row_geocode_forcing = function (row,fct){
-        console.log(row);
         var elem = row.entity;
         var ind = $scope.get_ind_obj(elem)
-        console.log(ind);
         var num = elem[$scope.champs_geocode.numero]; 
         var rue = elem[$scope.champs_geocode.rue];
         var cp = elem[$scope.champs_geocode.cp];
@@ -211,11 +203,9 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
         fct(num,rue,cp,commune,ind,true);
     }
 
-
-
     /*AJOUTER UN MARKER*/
     $scope.add_marker = function(lat,lng,ind,score){
-        console.log($scope.data_geocode[ind]['leaflet_id']);
+
         FGroup.removeLayer($scope.data_geocode[ind]['leaflet_id']);
         var url_marker ='';
         if (score > 99){url_marker='images/black.png';}
@@ -232,7 +222,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
         marker.on('drag', on_drag_Marker);// lors du drag d'un marker
         marker.on('dragend', on_drag_end_Marker);
     }
-
+    
     /*GEOCODE UN TABLEAU D'OBJETS */
     $scope.process_geogoding_async = function(array_data,timmer,fct){
         var current_elem =0;
@@ -240,7 +230,6 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
         cfpLoadingBar.set(0.01);
         $scope.btn_disabled = true;
         $scope.show_btn_cancel = true;
-
         loop_asynch();
 
         function loop_asynch(){ // boucle asynchron avec un timer pour ne pas bloquer l'application et afficher la barre de progression         
@@ -263,11 +252,9 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
             }
             else{
                 $scope.btn_disabled = false;
-                console.log ("ok");
                 $scope.show_btn_cancel = false;
                 map.fitBounds(FGroup.getBounds());  
                 cfpLoadingBar.complete()
-
             }
         }
     }
@@ -278,7 +265,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
         var adresse = num+' ' + rue + ',' +cp +',' + commune +', France';
         var adresse_encoded = encodeURIComponent(adresse);
         var url = "http://maps.googleapis.com/maps/api/geocode/json?address="+adresse_encoded+"&sensor=true"
-        console.log(url);
+       
         $.ajax({
             type: "get",
             url:url ,
@@ -320,9 +307,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
                     $scope.data_geocode[i][$scope.champs_geocode.lng] = data.results[0].geometry.location.lng;
                     $scope.data_geocode[i][$scope.champs_geocode.score] = score;
                     $scope.add_marker(data.results[0].geometry.location.lat, data.results[0].geometry.location.lng, i,score);
-
                 }
-
             }
         }
     }
@@ -511,6 +496,64 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
     };
 
+    /*GEOCODER BAN*/
+    $scope.geocodeBan = function (num,rue,cp,commune,i,forcing){
+        var adresse = num+' ' + rue + ',' +cp +',' + commune +', France';
+        var adresse_encoded = encodeURIComponent(adresse);
+        http://api-adresse.data.gouv.fr/search/?q=8 bd du port
+        var url = "http://api-adresse.data.gouv.fr/search/?q="+adresse_encoded+"&limit=1"
+        console.log(url);
+        $.ajax({
+            type: "get",
+            url:url ,
+            async: false,
+            success: result,
+            dataType: "json"
+        });
+        function result(data){
+            console.log(data.features[0]);
+            var res = data.features[0];
+            console.log(res.properties.type);
+            console.log(res.properties.score);
+            var lat = res.geometry.coordinates[1];
+            var lng = res.geometry.coordinates[0];
+            console.log(lat);
+            console.log(lng);
+
+            var score = 0;
+            var score_type =0;
+            var score_precision = 0;
+
+            switch (res.properties.type) {
+                case 'housenumber': score_type = 90 ;break;
+                case 'street':score_type = 60;break;
+                default: score_type = 0;break;
+            }
+
+            var _score = res.properties.score;
+            if (_score > 0.90) { score_precision = 9 } 
+            else  if (_score > 0.80) {  score_precision = 8 } 
+            else  if (_score > 0.70) {  score_precision = 7 } 
+            else  if (_score > 0.60) {  score_precision = 6 } 
+            else  if (_score > 0.50) {  score_precision = 5 } 
+            else  if (_score > 0.40) {  score_precision = 4 } 
+            else  if (_score > 0.20) {  score_precision = 2 } 
+            else  if (_score > 0.10) {  score_precision = 0 } 
+            else                     {  score_precision = -5 };
+
+
+            score = score_type+score_precision;
+            //console.log (score_type + ' + ' + score_precision + ' = ' + score);
+            if($scope.data_geocode[i][$scope.champs_geocode.score] < score || $scope.data_geocode[i][$scope.champs_geocode.score] == undefined || forcing==true){
+                $scope.data_geocode[i][$scope.champs_geocode.geocoder] = 'BAN';
+                $scope.data_geocode[i][$scope.champs_geocode.lat] = lat;
+                $scope.data_geocode[i][$scope.champs_geocode.lng] = lng;
+                $scope.data_geocode[i][$scope.champs_geocode.score] = score;
+                $scope.add_marker(lat,lng, i,score);
+
+            }
+        }
+    }
 
 
     /*OUVERTURE DE LA POPUP D'IMPORT*/
@@ -546,10 +589,11 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
             }
             var w_col_button = 16;
-            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/google.png" title="Google Geocoder!" ng-click="row_geocode_forcing(row,geocode_google)">' });
+            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/BAN.png" title="Geocoder cette ligne avec la BAN!" ng-click="row_geocode_forcing(row,geocodeBan)">' });
+            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/google.png" title="Geocoder cette ligne avec le service de Google!" ng-click="row_geocode_forcing(row,geocode_google)">' });
             column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/ign.png" title="Geocoder cette ligne avec le service de l\'IGN!" ng-click="row_geocode_forcing(row,geocode_ign)">' });
-            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/bing.jpg" title="Geocoder cette ligne avec le service de Bing" ng-click="row_geocode_forcing(row,geocode_bing)">' });
-            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/osm.png" title="Geocoder cette ligne avec le service de MapQuest" ng-click="row_geocode_forcing(row,geocode_osm)">' });
+            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/bing.jpg" title="Geocoder cette ligne avec le service de Bing!" ng-click="row_geocode_forcing(row,geocode_bing)">' });
+            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/osm.png" title="Geocoder cette ligne avec le service de MapQuest!" ng-click="row_geocode_forcing(row,geocode_osm)">' });
             $scope.columnDefs =  column;         
 
 
