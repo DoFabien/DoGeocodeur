@@ -1,0 +1,50 @@
+<link rel="stylesheet" type="text/css" href="style_popup_import.css" />    
+<link rel="stylesheet" href="lib/bootstrap.min.css">
+<div class="modal-header">
+    <h3>Importer des données</h3>
+</div>
+<div class="modal-body">
+    <tabset>
+        
+        <tab>
+            <tab-heading>Importer un CSV</tab-heading>
+            <label for="input_csv">Charger un fichier CSV</label>
+              <input id="input_csv" type="file" ng-file-select="onFileSelect($files)"  data-filename-placement="inside" accept=".csv"  />
+             <p class="help-block">Le CSV doit avoir une entete et les champs séparés par une virgule, un point virgule ou une tabulation <br> Le CSV doit être encodé en UTF-8 </p>
+        </tab>
+        
+        <tab>
+            <tab-heading>Importer par copier/coller</tab-heading>
+            
+            <label>Coller le text ci dessous</label>
+               <p class="help-block">Les champs doivent être séparés par une virgule, un point virgule ou une tabulation. <br> Coller le text, puis valider l'import</p>
+            <textarea ng-model="text_coller" class="form-control" rows="6"></textarea>
+         
+            <button id="btn_valider_text"  ng-click="import_text(text_coller)" class="btn btn-primary" >Valider</button>
+        </tab>
+        
+        
+    </tabset>
+    
+        
+        <div id="champs">
+            <label for="numero"> N° : </label>
+            <select id= "numero" ng-model="champs_geocod.numero"  ng-options="num.ind as num.lbl for num in field_for_select"></select><br>
+            
+            <label for="rue"> Rue : </label>
+            <select id= "rue" ng-model="champs_geocod.rue"  ng-options="rue.ind as rue.lbl for rue in field_for_select"></select><br>
+            
+            <label for="cp"> CP : </label>
+            <select id= "cp" ng-model="champs_geocod.cp"  ng-options="cp.ind as cp.lbl for cp in field_for_select"></select><br>
+            
+            <label for="commune"> Commune : </label>
+            <select id= "commune" ng-model="champs_geocod.commune"  ng-options="commune.ind as commune.lbl for commune in field_for_select"></select><br>
+        </div>
+   
+    
+    
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok(data.items)">OK</button>
+    <button class="btn btn-warning" ng-click="cancel()">Annuler</button>
+</div>
