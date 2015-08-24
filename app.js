@@ -170,28 +170,8 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
     /*EXPORT DU FICHIER ET PROPOSE LE TELECHARGEMENT*/
     $scope.export = function(content,nom_file,type_mime){
-       
         var blob = new Blob([content], {type: type_mime});
         saveAs(blob, nom_file);
-
-     /*   method = 'POST';
-        var form = document.createElement("form");
-        form.setAttribute("method", "POST");
-        form.setAttribute("action", 'php/export_file.php');
-        var params = {content:content, nom_file:nom_file,type_mime:type_mime}
-        for(var key in params) {
-            if(params.hasOwnProperty(key)) {
-                var hiddenField = document.createElement("input");
-                hiddenField.setAttribute("type", "hidden");
-                hiddenField.setAttribute("name", key);
-                hiddenField.setAttribute("value", params[key]);
-
-                form.appendChild(hiddenField);
-            }
-        }
-
-        document.body.appendChild(form);
-        form.submit();*/
 
     }
 
