@@ -4,14 +4,7 @@ if(isset($_GET['numero'])){ $numero= $_GET['numero'];}else{ $numero='';}
 if(isset($_GET['rue'])){ $rue= $_GET['rue'];}else{ $rue='';}
 if(isset($_GET['cp'])){ $cp= $_GET['cp'];}else{ $cp='';}
 if(isset($_GET['commune'])){ $commune= $_GET['commune'];}else{ $commune='';}
-//if(isset($_GET['x'])){ $x= $_GET['x'];}else{ $x='0';}
-//if(isset($_GET['y'])){ $y= $_GET['y'];}else{ $y='0';}
 
-
-//$numero = '57';
-//$rue = 'impasse du Bas Fort';
-//$cp = '38480';
-//$commune = 'Romagnieu';
 
 $nb_res = 1;
 

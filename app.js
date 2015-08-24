@@ -170,8 +170,11 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
     /*EXPORT DU FICHIER ET PROPOSE LE TELECHARGEMENT*/
     $scope.export = function(content,nom_file,type_mime){
+       
+        var blob = new Blob([content], {type: type_mime});
+        saveAs(blob, nom_file);
 
-        method = 'POST';
+     /*   method = 'POST';
         var form = document.createElement("form");
         form.setAttribute("method", "POST");
         form.setAttribute("action", 'php/export_file.php');
@@ -188,7 +191,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
         }
 
         document.body.appendChild(form);
-        form.submit();
+        form.submit();*/
 
     }
 
@@ -228,7 +231,6 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
         var current_elem =0;
         cfpLoadingBar.start();
         cfpLoadingBar.set(0.01);
-        $scope.btn_disabled = true;
         $scope.show_btn_cancel = true;
         loop_asynch();
 
@@ -238,6 +240,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
             var cp = array_data[current_elem][$scope.champs_geocode.cp];
             var commune = array_data[current_elem][$scope.champs_geocode.commune];
             var score =  array_data[current_elem][$scope.champs_geocode.score];
+              $scope.btn_disabled = false;
 
             if ((score<$scope.scrore_min || score == undefined) && $scope.show_btn_cancel == true ){
                 fct(num,rue,cp,commune,current_elem,false);
