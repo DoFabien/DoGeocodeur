@@ -21,7 +21,7 @@
         <script src="app.js"></script>
 
         <meta charset="UTF-8">
-        <title>DoGeocodeur</title>
+        <title>DoGeocodeur World - GOOGLE </title>
     </head>
     <body ng-controller="Ctrl1" >
         <script src="lib/leaflet/leaflet.js" type="text/javascript"></script>
@@ -52,12 +52,7 @@
                     <button ng-show='show_btn_cancel' ng-click ="show_btn_cancel = false" class="btn btn-danger btn" > Interrompre le géocodage</button><br>
                     <label class="lbl_center">Procéder au géocodage avec :</label><br>
 
-                    <button ng-disabled="btn_disabled" ng-click ="process_geogoding_async(data_geocode,50,geocodeBan)" class="btn btn-warning btn" > BAN</button><br>  
                     <button ng-disabled="btn_disabled" ng-click ="process_geogoding_async(data_geocode,50,geocode_google)" class="btn btn-warning btn" > Google</button><br>
-                    <button ng-disabled="btn_disabled" ng-click ="process_geogoding_async(data_geocode,200,geocode_bing) " class="btn btn-warning btn" >  Bing</button><br>
-                    <button ng-disabled="btn_disabled" ng-click ="process_geogoding_async(data_geocode,50,geocode_ign) " class="btn btn-warning btn" >  IGN</button><br>
-                    <button ng-disabled="btn_disabled" ng-click ="process_geogoding_async(data_geocode,50,geocode_osm) " class="btn btn-warning btn" >  OSM MapQuest</button><br>
-
 
                 </div>
             </div>

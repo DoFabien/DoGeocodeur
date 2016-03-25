@@ -131,9 +131,11 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
     $scope.generate_KML = function (){
         var head_kml = '<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">\n        <Document>\n';
         var content_kml = '';
-        for (j=0;j<$scope.data_geocode.length;j++){
+        for (j=0;j<$scope.data_geocode.length;j++)
+        {
             var data ='<ExtendedData>\n';
-            for (k=0;k<$scope.field_lbl_ind.length;k++){
+            for (k=0;k<$scope.field_lbl_ind.length;k++)
+            {
                 var current_data_name = '<Data name="'+$scope.field_lbl_ind[k].lbl+'">\n';
                 var current_data_value  = ' <value>'+$scope.data_geocode[j][$scope.field_lbl_ind[k].ind] + '</value>\n';
                 var current_data = current_data_name + current_data_value + '</Data>\n';
@@ -152,7 +154,8 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
     /*GENERATION DU GEOJSON*/
     $scope.generate_GEOJSON = function (){
         var features =[];
-        for (j=0;j<$scope.data_geocode.length;j++){
+        for (j=0;j<$scope.data_geocode.length;j++)
+        {
             var properties =[];
             for (k=0;k<$scope.field_lbl_ind.length;k++){
                 var propertie = '"'+$scope.field_lbl_ind[k].lbl+'":"'+$scope.data_geocode[j][$scope.field_lbl_ind[k].ind]+'"';
@@ -183,7 +186,8 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
         var rue = elem[$scope.champs_geocode.rue];
         var cp = elem[$scope.champs_geocode.cp];
         var commune = elem[$scope.champs_geocode.commune];
-        fct(num,rue,cp,commune,ind,true);
+        var pays = elem[$scope.champs_geocode.pays];
+        fct(num,rue,cp,commune,pays,ind,true);
     }
 
     /*AJOUTER UN MARKER*/
@@ -219,18 +223,19 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
             var rue = array_data[current_elem][$scope.champs_geocode.rue];
             var cp = array_data[current_elem][$scope.champs_geocode.cp];
             var commune = array_data[current_elem][$scope.champs_geocode.commune];
+            var pays = array_data[current_elem][$scope.champs_geocode.pays];
             var score =  array_data[current_elem][$scope.champs_geocode.score];
               $scope.btn_disabled = false;
 
             if ((score<$scope.scrore_min || score == undefined) && $scope.show_btn_cancel == true ){
-                fct(num,rue,cp,commune,current_elem,false);
+                fct(num,rue,cp,commune,pays,current_elem,false);
             }
 
             current_elem++;
             if(current_elem <array_data.length){
                 cfpLoadingBar.set(current_elem/array_data.length)
                 $timeout(function(){
-                    loop_asynch(num,rue,cp,commune)
+                    loop_asynch(num,rue,cp,commune,pays)
                 },timmer);
             }
             else{
@@ -244,8 +249,8 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
 
     /*GEOCODER GOOGLE*/
-    $scope.geocode_google = function (num,rue,cp,commune,i,forcing){
-        var adresse = num+' ' + rue + ',' +cp +',' + commune +', France';
+    $scope.geocode_google = function (num,rue,cp,commune,pays,i,forcing){
+        var adresse = num+' ' + rue + ',' +cp +',' + commune +','+pays;
         var adresse_encoded = encodeURIComponent(adresse);
         var url = "http://maps.googleapis.com/maps/api/geocode/json?address="+adresse_encoded+"&sensor=true"
        
@@ -282,7 +287,6 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
                     default: score_type = 0;break;
                 }
                 score = score_type+score_precision;
-                console.log($scope.data_geocode[i][$scope.champs_geocode.score]);
                 if($scope.data_geocode[i][$scope.champs_geocode.score] < score || $scope.data_geocode[i][$scope.champs_geocode.score] == undefined || forcing==true){
 
                     $scope.data_geocode[i][$scope.champs_geocode.geocoder] = 'Google';
@@ -294,253 +298,6 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
             }
         }
     }
-
-
-    /*GEOCODER BING*/
-    $scope.geocode_bing = function (num,rue,cp,commune,i,forcing){
-
-        var adresse = encodeURIComponent(cp)+'/'+encodeURIComponent(commune)+'/'+encodeURIComponent(num)+'%20'+encodeURIComponent(rue);
-        var url = 'http://dev.virtualearth.net/REST/v1/Locations/FR/'+adresse+'?o=json&key='+key_bing+'&maxResults=1'
-
-        $.ajax({
-            type: "get",
-            data: {url:url},
-            url:'php/geocode_bing.php' ,
-            async: false,
-            success: result, 
-            dataType: "json"
-        });
-        function result(data){
-            var score_type = 0;
-            var score_precision = 0;
-            var score = 0;
-
-            var statut = data.statusDescription;
-            if (statut == 'OK'){
-                // console.log(data);
-                if (data.resourceSets[0].resources.length>0){
-
-                    //    console.log(data.resourceSets[0].resources[0]);
-
-                    var lat = data.resourceSets[0].resources[0].geocodePoints[0].coordinates[0];
-                    var lng = data.resourceSets[0].resources[0].geocodePoints[0].coordinates[1]
-                    var entityType =data.resourceSets[0].resources[0].entityType;
-                    var confidence = data.resourceSets[0].resources[0].confidence;
-                    var matchCodes = data.resourceSets[0].resources[0].matchCodes[0];
-                    var calculationMethod = data.resourceSets[0].resources[0].geocodePoints[0].calculationMethod;
-                    //  console.log(lat + '  ' + lng +' | '+  entityType + ' '+matchCodes + ' '+ confidence + ' ' + calculationMethod);
-
-                    switch (entityType) {
-                        case 'Address': score_type = 90 ;break;
-                        case 'RoadBlock':score_type = 60;break;
-                        case 'Postcode1':score_type = 20;break;
-                        default: score_type = 0;break;
-                    }
-
-                    switch (calculationMethod) {
-                        case 'Rooftop': score_precision = 9 ;break;
-                        case 'Parcel':score_precision = 8;break;
-                        case 'InterpolationOffset':score_precision = 8;break;
-                        case 'Interpolation':score_precision = 6;break;
-                        default: score_precision = 0;break;
-                    }
-
-
-                    score = score_type + score_precision;
-                    console.log(score);
-                    if($scope.data_geocode[i][$scope.champs_geocode.score] < score || $scope.data_geocode[i][$scope.champs_geocode.score] == undefined|| forcing==true){
-                        $scope.data_geocode[i][$scope.champs_geocode.geocoder] = 'Bing';
-                        $scope.data_geocode[i][$scope.champs_geocode.lat] = lat;
-                        $scope.data_geocode[i][$scope.champs_geocode.lng] = lng;
-                        $scope.data_geocode[i][$scope.champs_geocode.score] = score;
-                        $scope.add_marker(lat,lng, i,score);
-                    }
-
-                }
-
-            }
-        }
-    }
-
-    /*GEOCODER MAPQUEST*/
-    $scope.geocode_osm = function (num,rue,cp,commune,i,forcing){
-        if(!cp && cp != ''){
-            var dep = cp.substring(0,2);// CP => trop de risque d'erreur dans la base OSM, on garde juste le Département
-        }
-        else{
-            var dep = ''; 
-        }
-
-
-        var adresse = encodeURIComponent(num)+'+'+encodeURIComponent(rue)+'+'+encodeURIComponent(commune)+'+'+encodeURIComponent(dep)+'+France';
-        var url = 'http://open.mapquestapi.com/nominatim/v1/search.php?format=json&q='+adresse+'&addressdetails=1&limit=1';
-        // console.log(url);
-        $.ajax({
-            type: "get",
-            url:url ,
-            async: false,
-            success: result, 
-            dataType: "json"
-        });
-
-        function result(data){
-            var score_class = 0;
-            var score_type = 0;
-            var score_osm_type = 0;
-            // console.log(data);
-            var type = data[0].type;
-            var lat = data[0].lat;
-            var lng = data[0].lon;
-            var osm_type = data[0].osm_type;
-            var osm_class = data[0].class;
-
-
-
-            switch (osm_class) {
-                case 'place': score_class = 60 ;break;
-                case 'highway':score_class = 60;break;
-                default: score_class = 0;break;
-            }
-
-            switch (type) {
-                case 'house': score_type = 36 ;break;
-                case 'highway':score_type = 2;break;
-                default: score_type = 0;break;
-            }
-
-            switch (osm_type) {
-                case 'node': score_osm_type = 3 ;break;
-                case 'way':score_osm_type = 1;break;
-                default: score_osm_type = 0;break;
-            }
-
-            var score = score_class + score_type + score_osm_type;
-            if($scope.data_geocode[i][$scope.champs_geocode.score] < score || $scope.data_geocode[i][$scope.champs_geocode.score] == undefined || forcing==true){
-                $scope.data_geocode[i][$scope.champs_geocode.geocoder] = 'OSM MapQuest';
-                $scope.data_geocode[i][$scope.champs_geocode.lat] = lat;
-                $scope.data_geocode[i][$scope.champs_geocode.lng] = lng;
-                $scope.data_geocode[i][$scope.champs_geocode.score] = score;
-                $scope.add_marker(lat,lng, i,score);
-            }
-        }
-
-    };
-
-    /*GEOCODER IGN*/
-    $scope.geocode_ign = function (num,rue,cp,commune,i,forcing){
-        var data = {numero:num, rue:rue, cp:cp, commune:commune};
-
-        $.ajax({
-            type: "get",
-            data:data,
-            url:'php/geocode_ign.php',
-            async: false,
-            error: function (xhr, ajaxOptions, thrownError) {console.log(xhr);},
-            success: result,
-            dataType: "json"
-        });
-
-        function result(data){
-            var score_matchType = 0;
-            var score_qualite = 0;
-            var score_accuracy = 0;
-
-            switch (data.matchType) {
-                case 'Street number': score_matchType = 90 ;break;
-                case 'Street':score_matchType = 60;break;
-                default: score_matchType = 0;break;
-            }
-            //             
-            switch (data.qualite) {
-                case 'Plaque adresse': score_qualite = 8 ;break;
-                case '2.5':score_qualite = 8;break;
-                case 'Projection':score_qualite = 6;break;
-                case '1.5':score_qualite = 5;break;
-                default: score_qualite = 0;break;
-            }
-
-            switch (data.accuracy) {
-                case '1.0': score_accuracy = 1 ;break;
-                default: score_accuracy = 0;break;
-            }
-
-
-            var score = score_matchType + score_qualite + score_accuracy; 
-            if($scope.data_geocode[i][$scope.champs_geocode.score] < score || $scope.data_geocode[i][$scope.champs_geocode.score] == undefined|| forcing==true){
-                $scope.data_geocode[i][$scope.champs_geocode.geocoder] = 'IGN';
-                $scope.data_geocode[i][$scope.champs_geocode.lat] = data.lat;
-                $scope.data_geocode[i][$scope.champs_geocode.lng] = data.lng;
-                $scope.data_geocode[i][$scope.champs_geocode.score] = score;
-                $scope.add_marker(data.lat,data.lng, i,score);
-            }
-
-
-        }
-
-    };
-
-    /*GEOCODER BAN*/
-    $scope.geocodeBan = function (num,rue,cp,commune,i,forcing){
-        var adresse = num+' ' + rue + ',' +cp +',' + commune +', France';
-        var adresse_encoded = encodeURIComponent(adresse);
-        http://api-adresse.data.gouv.fr/search/?q=8 bd du port
-        var url = "http://api-adresse.data.gouv.fr/search/?q="+adresse_encoded+"&limit=1"
-        
-        $.ajax({
-            type: "get",
-            url:url ,
-            async: false,
-            success: result,
-            dataType: "json"
-        });
-        function result(data){
-         if(data.features[0]){
-            var res = data.features[0];
-            var lat = res.geometry.coordinates[1];
-            var lng = res.geometry.coordinates[0];
-
-            var score = 0;
-            var score_type =0;
-            var score_precision = 0;
-
-            switch (res.properties.type) {
-                case 'housenumber': score_type = 90 ;break;
-                case 'street':score_type = 60;break;
-                default: score_type = 0;break;
-            }
-
-            var _score = res.properties.score;
-            if (_score > 0.80) { score_precision = 9 } 
-            else  if (_score > 0.70) {  score_precision = 7 } 
-            else  if (_score > 0.60) {  score_precision = 6 } 
-            else  if (_score > 0.50) {  score_precision = 0 } 
-            else  if (_score > 0.40) {  score_precision = -3 } 
-            else  if (_score > 0.20) {  score_precision = -5 } 
-            else  if (_score > 0.10) {  score_precision = -10 } 
-            else                     {  score_precision = -12 };
-
-
-            score = score_type+score_precision;
-            if($scope.data_geocode[i][$scope.champs_geocode.score] < score || $scope.data_geocode[i][$scope.champs_geocode.score] == undefined || forcing==true){
-                $scope.data_geocode[i][$scope.champs_geocode.geocoder] = 'BAN';
-                $scope.data_geocode[i][$scope.champs_geocode.lat] = lat;
-                $scope.data_geocode[i][$scope.champs_geocode.lng] = lng;
-                $scope.data_geocode[i][$scope.champs_geocode.score] = score;
-                $scope.add_marker(lat,lng, i,score);
-
-            }
-        }
-     }
-    }
-
-    $scope.arrayIsEmpty = function() {
- if ($scope.data_geocode.length > 1) { 
-   return false;
-  }
-  else {
-   return true;
-  }
-};
 
     /*OUVERTURE DE LA POPUP D'IMPORT*/
     $scope.open_popup = function (_data) {
@@ -575,11 +332,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
             }
             var w_col_button = 16;
-            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/BAN.png" title="Geocoder cette ligne avec la BAN!" ng-click="row_geocode_forcing(row,geocodeBan)">' });
             column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/google.png" title="Geocoder cette ligne avec le service de Google!" ng-click="row_geocode_forcing(row,geocode_google)">' });
-            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/ign.png" title="Geocoder cette ligne avec le service de l\'IGN!" ng-click="row_geocode_forcing(row,geocode_ign)">' });
-            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/bing.jpg" title="Geocoder cette ligne avec le service de Bing!" ng-click="row_geocode_forcing(row,geocode_bing)">' });
-            column.push({ field: '', width:w_col_button, cellTemplate: '<img src="images/osm.png" title="Geocoder cette ligne avec le service de MapQuest!" ng-click="row_geocode_forcing(row,geocode_osm)">' });
             $scope.columnDefs =  column;         
 
 

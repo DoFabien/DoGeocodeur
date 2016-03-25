@@ -16,7 +16,7 @@ var ModalInstanceCtrl = function ($scope, $modalInstance,data) {
     };  
     
     $scope.text_coller = '';
-    $scope.champs_geocod = {numero:'',rue:'',cp:'',commune:'',lat:'',lng:''};
+    $scope.champs_geocod = {numero:'',rue:'',cp:'',commune:'',pays:'',lat:'',lng:''};
     /*CHARGER LE FICHIER CSV*/
     $scope.onFileSelect = function($files) {
         var file = $files[0];
