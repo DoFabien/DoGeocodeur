@@ -8,7 +8,7 @@ body{
 #map {
     background-color:black;
     position: absolute;
-    right: 400px;
+    right: 200px;
     left:0px;
     top: 0px;
     height:60%;
@@ -52,7 +52,7 @@ body{
 /*    top:0px;30px*/
     height:40%;
     bottom:0px;
-    right:400px;
+    right:200px;
     left:0px;
     border: 1px solid rgb(212,212,212);
 }
@@ -60,7 +60,7 @@ body{
 #rigth{
     /*background-color:black;*/
       position: absolute;
-    width: 400px;
+    width: 200px;
     right:0px;
     bottom:0px;
     top: 0px;
