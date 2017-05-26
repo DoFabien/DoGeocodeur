@@ -30,7 +30,7 @@ var ModalInstanceCtrl = function ($scope, $modalInstance,data) {
     $scope.import_csv = function (str_full){
        // str_full = str_full.replace(/\n/g,'');// on enleve le retour \n pour les systèmes windows
        // var rows = str_full.split('\r');
-	    var rows = str_full.split('\n');
+	    var rows = str_full.split(/\r?\n/);
         var separateur  = $scope.searchSeparateur(rows[0]);
         $scope.importer_text(rows,separateur,true);
     }
