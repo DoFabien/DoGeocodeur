@@ -129,23 +129,8 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
 
     /*GENERATION DU KML*/
     $scope.generate_KML = function (){
-        var head_kml = '<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">\n        <Document>\n';
-        var content_kml = '';
-        for (j=0;j<$scope.data_geocode.length;j++){
-            var data ='<ExtendedData>\n';
-            for (k=0;k<$scope.field_lbl_ind.length;k++){
-                var current_data_name = '<Data name="'+$scope.field_lbl_ind[k].lbl+'">\n';
-                var current_data_value  = ' <value>'+$scope.data_geocode[j][$scope.field_lbl_ind[k].ind] + '</value>\n';
-                var current_data = current_data_name + current_data_value + '</Data>\n';
-                data += current_data;
-            }
-            data+='</ExtendedData>\n';
-            var point = '<Point>\n     <coordinates>'+ $scope.data_geocode[j][$scope.champs_geocode.lng] +','+$scope.data_geocode[j][$scope.champs_geocode.lat]+'</coordinates>\n</Point>\n';
-            var placemark = '<Placemark>\n <name></name>\n'+ data + point +'</Placemark>';
-            content_kml += placemark;
-        }
-        var footer_kml = '    </Document> \n</kml>'
-        var kml = head_kml + content_kml + footer_kml;
+        let geojson = JSON.parse($scope.generate_GEOJSON());
+        var kml = tokml(geojson);
         return kml;
     }
 
@@ -282,7 +267,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
                     default: score_type = 0;break;
                 }
                 score = score_type+score_precision;
-                console.log($scope.data_geocode[i][$scope.champs_geocode.score]);
+                // console.log($scope.data_geocode[i][$scope.champs_geocode.score]);
                 if($scope.data_geocode[i][$scope.champs_geocode.score] < score || $scope.data_geocode[i][$scope.champs_geocode.score] == undefined || forcing==true){
 
                     $scope.data_geocode[i][$scope.champs_geocode.geocoder] = 'Google';
@@ -534,7 +519,7 @@ app.controller('Ctrl1', function($scope,$upload,$timeout,$modal, cfpLoadingBar) 
     }
 
     $scope.arrayIsEmpty = function() {
- if ($scope.data_geocode.length > 1) { 
+ if ($scope.data_geocode.length > 0) { 
    return false;
   }
   else {
