@@ -1,0 +1,113 @@
+.mainToolbar {
+  height: 64px;
+}
+
+#map {
+  position: absolute;
+  top: 0px;
+  left: 300px;
+  right: 0;
+  height: 50%;
+}
+
+$actionWidth: 300px;
+.action {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: $actionWidth;
+  box-shadow: 0 -1px 24px rgba(0, 0, 0, 0.4);
+}
+
+
+$reduceButtonSize: 40px;
+.reduceActionButton {
+  position: absolute;
+  top: 85px;
+  height: $reduceButtonSize;
+  display: block;
+  width: $reduceButtonSize;
+  left: $actionWidth + (-5);
+  padding: 0;
+  z-index: 1000;
+  max-width: $reduceButtonSize;
+  min-width: $reduceButtonSize;
+}
+
+
+.dataTable {
+  position: absolute;
+  bottom: 0;
+  left: 300px;
+  right: 0;
+  height: 50%;
+}
+
+.selectedRow {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.actionButtonGeocode {
+  width: 290px;
+  display: block;
+  margin-bottom: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.importDataBigButton {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  margin-top: 70px;
+}
+
+.exportButton {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  width: 290px;
+  display: block;
+}
+
+.wrapperTable {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-y: scroll;
+}
+table {
+  width: 100%;
+  overflow-y: auto;
+}
+
+th {
+  text-align: left;
+}
+
+td button {
+  padding: 0;
+  min-width: unset;
+  width: 38px;
+  font-size: 0.6em;
+}
+
+mat-spinner {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pointer {
+  cursor: pointer;
+}
+mwlResizable {
+  box-sizing: border-box; // required for the enableGhostResize option to work
+}
+

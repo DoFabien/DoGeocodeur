@@ -1,0 +1,22 @@
+<mat-toolbar color="primary">
+        <mat-toolbar-row>
+          <span>Information sur l'objet</span>
+          <span class="spacer"></span>
+          <mat-icon  class="pointer" (click)="dialogRef.close()">close</mat-icon>
+        </mat-toolbar-row>
+      
+      </mat-toolbar>
+
+<div class="content">
+  <table>
+    
+    <tr *ngFor="let input of data.input  | keys">
+        <td>
+            {{input.key}}
+        </td>
+        <td>{{input.value}}</td>
+    </tr>
+
+</table>
+
+</div>      
