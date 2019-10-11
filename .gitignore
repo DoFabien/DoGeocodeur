@@ -1,43 +1,47 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+# See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# Folder config file
-Desktop.ini
+# compiled output
+/dist
+/tmp
+/out-tsc
+# Only exists if Bazel was run
+/bazel-out
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# dependencies
+/node_modules
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+# profiling files
+chrome-profiler-events.json
+speed-measure-plugin.json
 
-# Windows shortcuts
-*.lnk
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-# =========================
-# Operating System Files
-# =========================
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
 
-# OSX
-# =========================
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
 
+# System Files
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
+Thumbs.db
+deploy.config

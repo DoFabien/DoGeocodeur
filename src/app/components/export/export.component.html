@@ -1,0 +1,26 @@
+
+<mat-toolbar color="primary">
+        <mat-toolbar-row>
+          <span>Exporter les résultats</span>
+          <span class="spacer"></span>
+          <mat-icon  class="pointer" (click)="dialogRef.close()">close</mat-icon>
+        </mat-toolbar-row>
+      
+      </mat-toolbar>
+
+
+
+<div class="content">
+    <div>
+            Nombre de points à exporter : <b>{{this.dataGeocoded ? this.dataGeocoded.length || 0 : 0}}</b>
+    </div>
+        
+
+        <div class="divExportButton">
+        <button [disabled]="!this.dataGeocoded" class="exportButton" mat-raised-button color="primary" (click)="exportToGeojson()"> Geojson </button>
+        
+        <button [disabled]="!this.dataGeocoded" class="exportButton" mat-raised-button color="primary" (click)="exportToKML()"> KML </button>
+        <button [disabled]="!this.dataGeocoded" class="exportButton" mat-raised-button color="primary" (click)="exportToCSV()"> CSV </button>
+    </div>
+    
+</div>

@@ -1,0 +1,97 @@
+<mat-horizontal-stepper linear="true" #stepper>
+  <mat-step>
+    <ng-template matStepLabel>Importer les données</ng-template>
+
+    <div *ngIf="clipboarEnable" class="blockCenter">
+      <button
+        class="blockCenter"
+        type="button"
+        mat-raised-button
+        (click)="fromClipBoard()"
+      >
+        Depuis le presse papier
+      </button>
+    </div>
+
+    <div *ngIf="!clipboarEnable" class="blockCenter">
+      <mat-form-field class="example-full-width">
+        <textarea matInput placeholder="Coller votre text ici..."></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="blockCenter" style="text-align: center; margin: 10px">
+      <h2>Ou</h2>
+    </div>
+
+    <div class="dropZone">
+      <ngx-file-drop
+        dropZoneLabel="Drop files here"
+        (onFileDrop)="dropped($event)"
+        (onFileOver)="fileOver($event)"
+        (onFileLeave)="fileLeave($event)"
+      >
+        <ng-template ngx-file-drop-content-tmp>
+          Déposez votre CSV ici
+        </ng-template>
+      </ngx-file-drop>
+    </div>
+
+    <div class="blockCenter" style="text-align: center; margin: 10px">
+            <h2>Ou</h2>
+          </div>
+
+    <div class="blockCenter">
+      <button
+        class="blockCenter"
+        type="button"
+        mat-raised-button
+        (click)="fileInput.click()"
+      >
+        Choisissez votre fichier
+      </button>
+      <input
+        hidden
+        (change)="onFileSelected()"
+        #fileInput
+        type="file"
+        id="file"
+      />
+    </div>
+
+ 
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Configurer les champs</ng-template>
+
+    Selectionner le champ <b style="color:red; font-size: 1.5em;"> {{ labelMapingFields[stepMaping] | uppercase  }} </b>
+    <button mat-button (click)="resetMapingField()">Reset</button>
+
+    <table *ngIf="splitedData">
+      <thead>
+        <tr>
+          <th *ngFor="let hedearname of splitedData.header; let i = index">
+            <b> {{ labelMapingFields[mapingFields.indexOf(i)] }} </b>
+            <button
+              style="width: 100%;"
+              mat-raised-button
+              (click)="selectCol(i)"
+              [disabled]="mapingFields.indexOf(i) != -1"
+            >
+              {{ hedearname }}
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of splitedData.data | slice: 0:5">
+          <td *ngFor="let rowValue of row">{{ rowValue }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div>
+      <button mat-button matStepperNext>Next</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>

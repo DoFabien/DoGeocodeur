@@ -1,0 +1,26 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/theming';
+
+@include mat-core();
+
+$primary: mat-palette($mat-indigo);
+$accent:  mat-palette($mat-amber, 500, 900, A100);
+$warn:    mat-palette($mat-red);
+
+$my-app-theme: mat-light-theme($primary, $accent, $warn);
+@include angular-material-theme($my-app-theme);
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.spacer{flex: 1 1 auto;}
+.pointer{ cursor: pointer;}
+
+mat-dialog-container{
+    padding: 0 !important;
+}
+
+
+leaflet-left{
+    left: unset !important;
+    right: 0 !important;
+}

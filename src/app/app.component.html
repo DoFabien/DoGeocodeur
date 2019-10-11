@@ -1,0 +1,109 @@
+<div id='map' (selectedId)="mapSelectedId($event)" [ngStyle]="{'left': actionDivIsHidden ? 0 : '300px'}">
+
+</div>
+
+
+<button class="reduceActionButton" (click)="toggleActionDiv()"  mat-flat-button [ngStyle]="{'left': actionDivIsHidden ? 0 : '295px'}" >
+        <mat-icon *ngIf="!actionDivIsHidden">keyboard_arrow_left</mat-icon>
+        <mat-icon *ngIf="actionDivIsHidden">keyboard_arrow_right</mat-icon>
+    </button>
+
+<div class="action" *ngIf="!actionDivIsHidden">
+   
+    <button class="actionButtonGeocode" (click)="openSEttingsDialog()" mat-raised-button color="accent">
+        <mat-icon>settings</mat-icon>
+        Paramètres
+    </button>
+
+    <button class="actionButtonGeocode" (click)="openImportDataDialog()" mat-raised-button color="primary">
+        <mat-icon>redo</mat-icon>
+        Importer des
+        données
+    </button>
+
+    <div *ngIf="!this.geocoderService.isGeocoding">
+
+        <h3>Gécocoder avec les services de : </h3>
+        <button class="actionButtonGeocode" (click)="geocodeAll('ban', configService.scoreMax, 2000)" mat-raised-button
+            color="primary"> BAN</button>
+        <button class="actionButtonGeocode" (click)="geocodeAll('ign', configService.scoreMax, 200)" mat-raised-button
+            color="primary">IGN</button>
+        <button class="actionButtonGeocode" (click)="geocodeAll('mapbox', configService.scoreMax, 200)"
+            mat-raised-button color="primary">Mapbox</button>
+        <button class="actionButtonGeocode" (click)="geocodeAll('bing', configService.scoreMax, 400)" mat-raised-button
+            color="primary">Bing</button>
+        <button class="actionButtonGeocode" (click)="geocodeAll('google', configService.scoreMax, 500)"
+            mat-raised-button color="primary">Google</button>
+    </div>
+
+    <mat-spinner *ngIf="this.geocoderService.isGeocoding"></mat-spinner>
+    <button *ngIf="this.geocoderService.isGeocoding" (click)="this.geocoderService.cancelGeocoding = true"
+    class="actionButtonGeocode" 
+        mat-raised-button color="warn">Annuler</button>
+
+
+    <button class="exportButton" (click)="openExportDialog()" mat-raised-button color="primary">
+        <mat-icon>save_alt</mat-icon>
+        Exporter
+    </button>
+
+
+
+
+
+
+</div>
+
+<div class="dataTable" [ngStyle]="{'left': actionDivIsHidden ? 0 : '300px'}">
+    <button class="importDataBigButton" *ngIf="!this.geocoderService.data" (click)="openImportDataDialog()"
+        mat-raised-button color="primary">Importer des données</button>
+
+    <div *ngIf="this.geocoderService.data" class="wrapperTable">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 24px;"></th>
+                    <th style="width: 2em;">Score</th>
+                    <th style="width: 6em;">geocoder</th>
+                    <td style="width: 190px;"></td>
+                    <th style="width: 4em;">Numéro</th>
+                    <th>Rue</th>
+                    <th>Commune</th>
+                    <th>CP</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of this.geocoderService.data"
+                    [id]="'el'+ row.id "
+                    [ngClass]="{'selectedRow': row.id == geocoderService.selectedId}">
+                    <td (click)="mapService.zoomToRow(row)" class="pointer">
+                        <mat-icon *ngIf="row.coords">zoom_in</mat-icon>
+                    </td>
+                    <td>{{row.score}}</td>
+                    <td>{{row.geocoder}}</td>
+                    <td>
+                        <button mat-stroked-button color="primary" [disabled]="row.geocoder == 'BAN'"
+                            (click)="this.geocoderService.geocodeRow(row, 'ban')">BAN</button>
+                        <button mat-stroked-button color="primary" [disabled]="row.geocoder == 'IGN'"
+                            (click)="this.geocoderService.geocodeRow(row, 'ign')">IGN</button>
+                        <button mat-stroked-button color="primary" [disabled]="row.geocoder == 'Mapbox'"
+                            (click)="this.geocoderService.geocodeRow(row, 'mapbox')">Mapbox</button>
+                        <button mat-stroked-button color="primary" [disabled]="row.geocoder == 'Google'"
+                            (click)="this.geocoderService.geocodeRow(row, 'google')">Google</button>
+                        <button mat-stroked-button color="primary" [disabled]="row.geocoder == 'Bing'"
+                            (click)="this.geocoderService.geocodeRow(row, 'bing')">Bing</button>
+
+                    </td>
+                    <td>{{row.num}}</td>
+                    <td>{{row.adresse}}</td>
+                    <td>{{row.commune}}</td>
+                    <td>{{row.cp}}</td>
+                 
+                    <td (click)="openDetailDialog(row)" class="pointer"> <mat-icon>view_module</mat-icon></td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
